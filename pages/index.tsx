@@ -34,11 +34,11 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+
       <main className="flex w-full flex-1 flex-col items-stretch justify-center px-4 lg:px-10 py-6">
         <h1 className="text-2xl font-bold text-gray-600 py-2 " >Happy Chat</h1>
         <div className="flex-1 flex flex-col space-y-3 ">
           <div className="flex-1 bg-gray-200 rounded-md shadow-inner">
-
             <Messages />
           </div>
           <form onSubmit={handleSubmit} className="flex w-full">
