@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import type { NextPage } from 'next'
 import supabase from '../utils/supabase';
 
@@ -21,17 +21,23 @@ type Message = {
 
 const Messages: NextPage = () => {
 
+
+
     const [messages, setMessages] = useState<Message[]>([])
-    
+    const messagesRef = useRef<HTMLUListElement>(null)
+
         const getData = async () => {
             const { data } = await supabase.from<Message>('messages').select('*, profile_id(id, username)').order('created_at', { ascending: true })
             
-            console.log(data)
+          
         if (!data) {
             alert('No messages')
             return
         }
-        setMessages(data)
+            setMessages(data)
+            if (messagesRef.current) {
+                messagesRef.current.scrollTop = messagesRef.current.scrollHeight
+            }
     }
 
     useEffect(() => {
@@ -58,7 +64,7 @@ const Messages: NextPage = () => {
 
 
   return (
-      <ul className="p-2 flex flex-col space-y-4 overflow-y-scroll max-h-[75vh]">
+      <ul className="p-2 flex flex-col space-y-4 overflow-y-scroll max-h-[75vh]" ref={messagesRef}>
           {messages.map((message) => {
               return <li className={message.profile_id.id === userId ? 'px-3 py-1 self-end bg-sky-200 rounded-md max-w-[80%] shadow' : 'shadow px-3 py-1 bg-slate-100 self-start  rounded-md'} key={message.id}>
 

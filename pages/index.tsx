@@ -27,6 +27,13 @@ const Home: NextPage = () => {
 
   }
 
+  const handleCreateRoom =  async  () => {
+     await supabase.from('rooms').insert({}, {returning: 'minimal'})
+     
+     const {data} = await supabase.from('rooms').select('*').order('created_at', {ascending: false}).limit(1).single()
+     console.log(data)
+    }
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center py-2">
       <Head>
@@ -36,7 +43,10 @@ const Home: NextPage = () => {
 
 
       <main className="flex w-full flex-1 flex-col items-stretch justify-center px-4 lg:px-10 py-6">
+        <div className="flex py-2">
         <h1 className="text-2xl font-bold text-gray-600 py-2 " >Happy Chat</h1>
+<button className="ml-6 rounded bg-red-600 text-white px-6 py-2 shadow" onClick={handleCreateRoom}>New Room</button>
+        </div>
         <div className="flex-1 flex flex-col space-y-3 ">
           <div className="flex-1 bg-gray-200 rounded-md shadow-inner">
             <Messages />
