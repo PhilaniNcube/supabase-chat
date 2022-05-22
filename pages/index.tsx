@@ -3,9 +3,18 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Messages from '../components/Messages';
 import supabase from '../utils/supabase';
+import { useRouter } from 'next/router'
+
+type Room = {
+  id: string,
+  created_at: string,
+  name: string | null
+} 
 
 
 const Home: NextPage = () => {
+
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -28,10 +37,21 @@ const Home: NextPage = () => {
   }
 
   const handleCreateRoom =  async  () => {
-     await supabase.from('rooms').insert({}, {returning: 'minimal'})
+    const { data, error } = await supabase.rpc<Room>('create_room',).single()
+    
+    if (error) {
+      alert(error)
+      return
+    }
+  
+    if (data) {
+      
+      router.push(`/rooms/${data.id}`)
+    }
+    
+    
      
-     const {data} = await supabase.from('rooms').select('*').order('created_at', {ascending: false}).limit(1).single()
-     console.log(data)
+  
     }
 
   return (
