@@ -37,7 +37,7 @@ const router = useRouter()
 
           <Input label="Password" name="password" type="password" />
           <Button type="primary" htmlType="submit">
-            Sign Up
+            Sign In
           </Button>
         </div>
       </form>

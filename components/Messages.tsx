@@ -7,26 +7,30 @@ type Profile = {
   username: string
 }
 
+
+
 type Message = {
   id: string
   created_at: string
   content: string
   profile_id: string
-  profile: {
-    id: string
-    username: string
-  }
+  profile: Profile
 }
 
 type MessagesProps = {
   roomId: string
 }
 
-let profileCache = {
 
-} as any
+type ProfileCache = {
+  [userId:string]: Profile
+}
+
+
+let profileCache = {} as any
 
 const Messages = ({ roomId }: MessagesProps) => {
+  const [profileCache, setProfileCache] = useState<ProfileCache>({})
   const [messages, setMessages] = useState<Message[]>([])
   const messagesRef = useRef<HTMLUListElement>(null)
 
@@ -43,9 +47,20 @@ const Messages = ({ roomId }: MessagesProps) => {
       return
     }
 
-    data.map(message => message.profile).forEach(profile => {
+    let newProfiles = Object.fromEntries(data.map((message) => message.profile).map(profile => [profile.id, profile]))
+
+    setProfileCache(current => ({
+      ...current,
+      ...newProfiles
+    }))
+
+/*     data.map(message => message.profile).forEach(profile => {
+      setProfileCache(current => ({
+        ...current, 
+        [profile.id]:profile
+      }))
         profileCache[profile.id] = profile
-    })
+    }) */
 
     setMessages(data)
     if (messagesRef.current) {
@@ -61,6 +76,7 @@ const Messages = ({ roomId }: MessagesProps) => {
     const subscription = supabase
       .from<Message>(`messages:room_id=eq.${roomId}`)
       .on('INSERT', (payload) => {
+
        setMessages(current => [...current, {...payload.new, profile: profileCache[payload.new.profile_id]}])
          if (messagesRef.current) {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight
